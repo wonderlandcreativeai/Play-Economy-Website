@@ -1,0 +1,204 @@
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, Loader, Video, Image, Mail } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+const PlayEconomyLandingPage = () => {
+  const [formData, setFormData] = useState({
+    businessName: '',
+    productService: '',
+    favoriteMovie: '',
+    marketingGoals: '',
+    email: ''
+  });
+  const [currentStage, setCurrentStage] = useState('form');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      setCurrentStage('brand-story');
+    }, 3000);
+  };
+
+  const handleNextStage = () => {
+    const stages = ['form', 'brand-story', 'video', 'custom-photos', 'email-prompt'];
+    const currentIndex = stages.indexOf(currentStage);
+    if (currentIndex < stages.length - 1) {
+      setCurrentStage(stages[currentIndex + 1]);
+    }
+  };
+
+  useEffect(() => {
+    if (currentStage === 'video') {
+      setTimeout(() => setShowVideo(true), 1000);
+    }
+  }, [currentStage]);
+
+  const renderStage = () => {
+    switch (currentStage) {
+      case 'form':
+        return (
+          <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+            <input
+              type="text"
+              name="businessName"
+              value={formData.businessName}
+              onChange={handleInputChange}
+              placeholder="Business Name"
+              className="w-full p-2 border rounded"
+              required
+            />
+            <input
+              type="text"
+              name="productService"
+              value={formData.productService}
+              onChange={handleInputChange}
+              placeholder="Product/Service"
+              className="w-full p-2 border rounded"
+              required
+            />
+            <input
+              type="text"
+              name="favoriteMovie"
+              value={formData.favoriteMovie}
+              onChange={handleInputChange}
+              placeholder="Target Audience's Favorite Movie/Series"
+              className="w-full p-2 border rounded"
+              required
+            />
+            <textarea
+              name="marketingGoals"
+              value={formData.marketingGoals}
+              onChange={handleInputChange}
+              placeholder="Marketing and Sales Goals"
+              className="w-full p-2 border rounded"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Email Address"
+              className="w-full p-2 border rounded"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white p-2 rounded flex items-center justify-center transition-colors hover:bg-blue-600"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <><Loader className="animate-spin mr-2" /> Generating...</>
+              ) : (
+                <>Create My Play Economy Experience <ArrowRight className="ml-2" /></>
+              )}
+            </button>
+          </form>
+        );
+      case 'brand-story':
+        return (
+          <div className="border p-4 rounded">
+            <h3 className="text-xl font-semibold mb-2">Your Brand Story</h3>
+            <p className="mb-4">
+              In a world where {formData.productService} was just another commodity, {formData.businessName} dared to dream differently. Inspired by the epic narrative of {formData.favoriteMovie}, they embarked on a journey to transform their industry. Their mission: {formData.marketingGoals}. This is not just a business story; it's an adventure that will captivate your audience and turn customers into passionate advocates.
+            </p>
+            <button
+              onClick={handleNextStage}
+              className="w-full bg-blue-500 text-white p-2 rounded flex items-center justify-center transition-colors hover:bg-blue-600"
+            >
+              See Your Story Come to Life <Video className="ml-2" />
+            </button>
+          </div>
+        );
+      case 'video':
+        return (
+          <div className="border p-4 rounded">
+            <h3 className="text-xl font-semibold mb-2 flex items-center">
+              <Video className="mr-2" /> Your Play Economy Experience
+            </h3>
+            {showVideo ? (
+              <video autoPlay controls className="w-full mb-4 animate-fade-in">
+                <source src="/api/placeholder-video" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                <Loader className="animate-spin" />
+              </div>
+            )}
+            <button
+              onClick={handleNextStage}
+              className="w-full bg-blue-500 text-white p-2 rounded flex items-center justify-center transition-colors hover:bg-blue-600"
+            >
+              View Your Custom Photos <Image className="ml-2" />
+            </button>
+          </div>
+        );
+      case 'custom-photos':
+        return (
+          <div className="border p-4 rounded">
+            <h3 className="text-xl font-semibold mb-2 flex items-center">
+              <Image className="mr-2" /> Your Custom Story Images
+            </h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <img src="/api/placeholder/400/300" alt="Custom image 1" className="w-full" />
+              <img src="/api/placeholder/400/300" alt="Custom image 2" className="w-full" />
+              <img src="/api/placeholder/400/300" alt="Custom image 3" className="w-full" />
+              <img src="/api/placeholder/400/300" alt="Custom image 4" className="w-full" />
+            </div>
+            <button
+              onClick={handleNextStage}
+              className="w-full bg-blue-500 text-white p-2 rounded flex items-center justify-center transition-colors hover:bg-blue-600"
+            >
+              Finish Experience <ArrowRight className="ml-2" />
+            </button>
+          </div>
+        );
+      case 'email-prompt':
+        return (
+          <div className="border p-4 rounded text-center">
+            <Mail className="w-16 h-16 mx-auto mb-4 text-green-500" />
+            <h3 className="text-xl font-semibold mb-2">Check Your Inbox!</h3>
+            <p className="mb-4">We've sent your personalized Play Economy video to {formData.email}.</p>
+            <p className="font-semibold">What's Next?</p>
+            <p className="mt-2">At the end of your video, you'll find an exclusive offer for a strategic deck from Wonderland Immersive Design.</p>
+            <p className="mt-2">Our Play Economy strategist is excited to meet with you and explore how we can bring your brand's story to life!</p>
+            <button
+              onClick={() => setCurrentStage('form')}
+              className="mt-4 bg-blue-500 text-white p-2 rounded transition-colors hover:bg-blue-600"
+            >
+              Create Another Experience
+            </button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Welcome to the Play Economy</h1>
+      
+      <Alert className="mb-6">
+        <AlertTitle>What is the Play Economy?</AlertTitle>
+        <AlertDescription>
+          The Play Economy is a transformative concept where customers become active participants in a brand's narrative through AI and XR technologies. Create personalized, immersive brand experiences inspired by popular movies or series.
+        </AlertDescription>
+      </Alert>
+
+      {renderStage()}
+    </div>
+  );
+};
+
+export default PlayEconomyLandingPage;
